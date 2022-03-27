@@ -1,0 +1,184 @@
+version: "3.5"
+
+services:
+  kerberos:
+    image: tornermarton/kerberos
+    container_name: kerberos.example
+    hostname: kerberos.example.com
+    volumes:
+      - server-keytab:/etc/security/keytab
+
+  namenode:
+    image: tornermarton/hadoop
+    command: hdfs namenode
+    user: hdfs:hadoop
+    container_name: nn.example
+    hostname: nn.example.com
+    restart: unless-stopped
+    depends_on:
+      - kerberos
+    ports:
+      - "9870:9870"
+      - "9871:9871"
+    env_file:
+      - .env
+    volumes:
+    - hdfs-nn:/data/0/nn
+    - server-keytab:/etc/security/keytab
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
+
+#  journalnode:
+#    image: tornermarton/hadoop
+#    command: hdfs journalnode
+#    restart: unless-stopped
+#    depends_on:
+#      - namenode
+#    env_file:
+#      - .env
+#    volumes:
+#      - hdfs-jn:/data/0/jn
+#    logging:
+#      driver: "json-file"
+#      options:
+#        max-size: "200k"
+#        max-file: "10"
+
+  datanode01:
+    image: tornermarton/hadoop
+    command: hdfs datanode
+    container_name: dn01.example
+    hostname: dn01.example.com
+    restart: unless-stopped
+    depends_on:
+      - kerberos
+      - namenode
+    env_file:
+      - .env
+    volumes:
+    - hdfs-dn:/data/0/dn
+    - server-keytab:/etc/security/keytab
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
+
+  resourcemanager:
+    image: tornermarton/hadoop
+    command: yarn resourcemanager
+    user: yarn:hadoop
+    container_name: rm.example
+    hostname: rm.example.com
+    restart: unless-stopped
+    ports:
+    - "8088:8088"
+    depends_on:
+      - kerberos
+      - namenode
+    env_file:
+      - .env
+    volumes:
+      - server-keytab:/etc/security/keytab
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
+
+  nodemanager01:
+    image: tornermarton/hadoop
+    command: yarn nodemanager
+    user: yarn:hadoop
+    container_name: nm01.example
+    hostname: nm01.example.com
+    restart: unless-stopped
+    depends_on:
+      - kerberos
+      - namenode
+      - resourcemanager
+    env_file:
+      - .env
+    volumes:
+      - server-keytab:/etc/security/keytab
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
+
+  historyserver:
+    image: tornermarton/hadoop
+    command: yarn historyserver
+    user: mapred:hadoop
+    container_name: jhs.exmaple
+    hostname: jhs.example.com
+    restart: unless-stopped
+    depends_on:
+      - kerberos
+      - namenode
+      - resourcemanager
+    env_file:
+      - .env
+    volumes:
+      - hdfs-history:/hadoop/yarn/timeline
+      - server-keytab:/etc/security/keytab
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
+
+#  spark-historyserver:
+#    image: tornermarton/hadoop
+#    command: start-history-server.sh
+#    user: spark:hadoop
+#    restart: unless-stopped
+#    ports:
+#    - "18080:18080"
+#    depends_on:
+#      - namenode
+#      - datanode
+#      - resourcemanager
+#    env_file:
+#      - .env
+#    environment:
+#      SPARK_NO_DAEMONIZE: "true"
+#    logging:
+#      driver: "json-file"
+#      options:
+#        max-size: "200k"
+#        max-file: "10"
+
+  gateway:
+    image: tornermarton/hadoop
+    command: tail -f /dev/null
+    container_name: gw.example
+    hostname: gw.example.com
+    restart: unless-stopped
+    depends_on:
+      - kerberos
+      - namenode
+    env_file:
+      - .env
+    volumes:
+      - server-keytab:/etc/security/keytab
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
+
+volumes:
+  hdfs-nn:
+  hdfs-dn:
+#  hdfs-jn:
+  hdfs-history:
+  server-keytab:
+
+networks:
+  default:
+    name: com
