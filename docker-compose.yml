@@ -1,13 +1,6 @@
 version: "3.5"
 
 services:
-  kerberos:
-    image: tornermarton/kerberos
-    container_name: kerberos.example
-    hostname: kerberos.example.com
-    volumes:
-      - server-keytab:/etc/security/keytab
-
   namenode:
     image: tornermarton/hadoop
     command: hdfs namenode
@@ -15,16 +8,18 @@ services:
     container_name: nn.example
     hostname: nn.example.com
     restart: unless-stopped
-    depends_on:
-      - kerberos
     ports:
       - "9870:9870"
       - "9871:9871"
+      - "50070:50070"
+      - "50470:50470"
     env_file:
       - .env
     volumes:
-    - hdfs-nn:/data/0/nn
-    - server-keytab:/etc/security/keytab
+      - hdfs-nn:/data/0/nn
+      - ./keytabs:/etc/security/keytab
+      - ./hdfs.jks:/hdfs.jks
+      - ./krb5.conf:/etc/krb5.conf
     logging:
       driver: "json-file"
       options:
@@ -54,13 +49,14 @@ services:
     hostname: dn01.example.com
     restart: unless-stopped
     depends_on:
-      - kerberos
       - namenode
     env_file:
       - .env
     volumes:
-    - hdfs-dn:/data/0/dn
-    - server-keytab:/etc/security/keytab
+      - hdfs-dn:/data/0/dn
+      - ./keytabs:/etc/security/keytab
+      - ./hdfs.jks:/hdfs.jks
+      - ./krb5.conf:/etc/krb5.conf
     logging:
       driver: "json-file"
       options:
@@ -77,12 +73,12 @@ services:
     ports:
     - "8088:8088"
     depends_on:
-      - kerberos
       - namenode
     env_file:
       - .env
     volumes:
-      - server-keytab:/etc/security/keytab
+      - ./keytabs:/etc/security/keytab
+      - ./krb5.conf:/etc/krb5.conf
     logging:
       driver: "json-file"
       options:
@@ -97,13 +93,13 @@ services:
     hostname: nm01.example.com
     restart: unless-stopped
     depends_on:
-      - kerberos
       - namenode
       - resourcemanager
     env_file:
       - .env
     volumes:
-      - server-keytab:/etc/security/keytab
+      - ./keytabs:/etc/security/keytab
+      - ./krb5.conf:/etc/krb5.conf
     logging:
       driver: "json-file"
       options:
@@ -118,14 +114,14 @@ services:
     hostname: jhs.example.com
     restart: unless-stopped
     depends_on:
-      - kerberos
       - namenode
       - resourcemanager
     env_file:
       - .env
     volumes:
       - hdfs-history:/hadoop/yarn/timeline
-      - server-keytab:/etc/security/keytab
+      - ./keytabs:/etc/security/keytab
+      - ./krb5.conf:/etc/krb5.conf
     logging:
       driver: "json-file"
       options:
@@ -160,12 +156,12 @@ services:
     hostname: gw.example.com
     restart: unless-stopped
     depends_on:
-      - kerberos
       - namenode
     env_file:
       - .env
     volumes:
-      - server-keytab:/etc/security/keytab
+      - ./keytabs:/etc/security/keytab
+      - ./krb5.conf:/etc/krb5.conf
     logging:
       driver: "json-file"
       options:

@@ -8,8 +8,6 @@ help: ## This help.
 
 .DEFAULT_GOAL := help
 
-
-# DOCKER TASKS
 # Build the container
 build: ## Build the container
-	docker build -t tornermarton/kerberos .
+	@docker build -t tornermarton/hadoop .
