@@ -45,6 +45,7 @@ services:
   datanode01:
     image: tornermarton/hadoop
     command: hdfs datanode
+    user: hdfs:hadoop
     container_name: dn01.example
     hostname: dn01.example.com
     restart: unless-stopped
