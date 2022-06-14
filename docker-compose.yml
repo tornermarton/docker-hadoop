@@ -9,16 +9,14 @@ services:
     hostname: nn.example.com
     restart: unless-stopped
     ports:
-      - "9870:9870"
       - "9871:9871"
-      - "50070:50070"
       - "50470:50470"
     env_file:
       - .env
     volumes:
       - hdfs-nn:/data/0/nn
-      - ./keytabs:/etc/security/keytab
-      - ./hdfs.jks:/hdfs.jks
+      - ./keytab:/etc/security/keytab
+      - ./keystore/hdfs.jks:/hdfs.jks
       - ./krb5.conf:/etc/krb5.conf
     logging:
       driver: "json-file"
@@ -55,8 +53,8 @@ services:
       - .env
     volumes:
       - hdfs-dn:/data/0/dn
-      - ./keytabs:/etc/security/keytab
-      - ./hdfs.jks:/hdfs.jks
+      - ./keytab:/etc/security/keytab
+      - ./keystore/hdfs.jks:/hdfs.jks
       - ./krb5.conf:/etc/krb5.conf
     logging:
       driver: "json-file"
@@ -72,13 +70,13 @@ services:
     hostname: rm.example.com
     restart: unless-stopped
     ports:
-    - "8088:8088"
+      - "8088:8088"
     depends_on:
       - namenode
     env_file:
       - .env
     volumes:
-      - ./keytabs:/etc/security/keytab
+      - ./keytab:/etc/security/keytab
       - ./krb5.conf:/etc/krb5.conf
     logging:
       driver: "json-file"
@@ -93,13 +91,15 @@ services:
     container_name: nm01.example
     hostname: nm01.example.com
     restart: unless-stopped
+    ports:
+      - "8042:8042"
     depends_on:
       - namenode
       - resourcemanager
     env_file:
       - .env
     volumes:
-      - ./keytabs:/etc/security/keytab
+      - ./keytab:/etc/security/keytab
       - ./krb5.conf:/etc/krb5.conf
     logging:
       driver: "json-file"
@@ -111,9 +111,11 @@ services:
     image: tornermarton/hadoop
     command: yarn historyserver
     user: mapred:hadoop
-    container_name: jhs.exmaple
+    container_name: jhs.example
     hostname: jhs.example.com
     restart: unless-stopped
+    ports:
+      - "8188:8188"
     depends_on:
       - namenode
       - resourcemanager
@@ -121,7 +123,7 @@ services:
       - .env
     volumes:
       - hdfs-history:/hadoop/yarn/timeline
-      - ./keytabs:/etc/security/keytab
+      - ./keytab:/etc/security/keytab
       - ./krb5.conf:/etc/krb5.conf
     logging:
       driver: "json-file"
@@ -161,7 +163,7 @@ services:
     env_file:
       - .env
     volumes:
-      - ./keytabs:/etc/security/keytab
+      - ./keytab:/etc/security/keytab
       - ./krb5.conf:/etc/krb5.conf
     logging:
       driver: "json-file"
@@ -174,7 +176,6 @@ volumes:
   hdfs-dn:
 #  hdfs-jn:
   hdfs-history:
-  server-keytab:
 
 networks:
   default:
