@@ -1,9 +1,18 @@
 FROM debian:9
+#FROM python:latest
 
 MAINTAINER Márton Torner <torner.marton@gmail.com>
 
 SHELL ["/bin/bash", "-c"]
 ENV DEBIAN_FRONTEND noninteractive
+
+#RUN apt-get update \
+#    && apt install -y --no-install-recommends apt-transport-https ca-certificates wget dirmngr gnupg software-properties-common \
+#    && wget -qO - https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public | apt-key add - \
+#    && add-apt-repository --yes https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/ \
+#    && apt update \
+#    && apt install -y --no-install-recommends adoptopenjdk-8-hotspot wget procps krb5-user \
+#ENV JAVA_HOME=/usr/lib/jvm/adoptopenjdk-8-hotspot-amd64/
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends openjdk-8-jdk wget procps krb5-user \
