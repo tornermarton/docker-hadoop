@@ -1,12 +1,14 @@
 # Docker Hadoop
 
-Create kerberos keytabs (must be done on kerberos server and the keys should be copied):
+Create kerberos service principal keytabs (must be done on kerberos server and the keys should be copied):
 ```bash
 /usr/sbin/kadmin.local addprinc -randkey gw/gw.example.com
 /usr/sbin/kadmin.local ktadd -k /etc/security/keytab/gw.service.keytab gw/gw.example.com
 
 /usr/sbin/kadmin.local addprinc -randkey nn/nn.example.com
 /usr/sbin/kadmin.local ktadd -k /etc/security/keytab/nn.service.keytab nn/nn.example.com
+/usr/sbin/kadmin.local addprinc -randkey jn/jn.example.com
+/usr/sbin/kadmin.local ktadd -k /etc/security/keytab/jn.service.keytab jn/jn.example.com
 /usr/sbin/kadmin.local addprinc -randkey dn/dn01.example.com
 /usr/sbin/kadmin.local ktadd -k /etc/security/keytab/dn.service.keytab dn/dn01.example.com
 /usr/sbin/kadmin.local addprinc -randkey rm/rm.example.com
@@ -18,6 +20,8 @@ Create kerberos keytabs (must be done on kerberos server and the keys should be 
 
 /usr/sbin/kadmin.local addprinc -randkey HTTP/nn.example.com
 /usr/sbin/kadmin.local ktadd -k /etc/security/keytab/HTTP.service.keytab HTTP/nn.example.com
+/usr/sbin/kadmin.local addprinc -randkey HTTP/jn.example.com
+/usr/sbin/kadmin.local ktadd -k /etc/security/keytab/HTTP.service.keytab HTTP/jn.example.com
 /usr/sbin/kadmin.local addprinc -randkey HTTP/rm.example.com
 /usr/sbin/kadmin.local ktadd -k /etc/security/keytab/HTTP.service.keytab HTTP/rm.example.com
 /usr/sbin/kadmin.local addprinc -randkey HTTP/nm01.example.com
@@ -26,11 +30,17 @@ Create kerberos keytabs (must be done on kerberos server and the keys should be 
 /usr/sbin/kadmin.local ktadd -k /etc/security/keytab/HTTP.service.keytab HTTP/jhs.example.com
 ```
 
+Create kerberos user principal (with password):
+```bash
+/usr/sbin/kadmin.local addprinc <username>
+```
+
 Create keystore for HTTPS:
 ```bash
+mkdir -p keystore
 keytool -genkey -alias nn.example.com -keyalg rsa -keysize 1024 -dname "CN=nn.example.com" -keypass "${KEYPASS:-changeme}" -keystore keystore/hdfs.jks -storepass "${STOREPASS:-changeme}"
 keytool -genkey -alias dn01.example.com -keyalg rsa -keysize 1024 -dname "CN=dn01.example.com" -keypass "${KEYPASS:-changeme}" -keystore keystore/hdfs.jks -storepass "${STOREPASS:-changeme}"
-chmod 700 hdfs.jks
+chmod 700 keystore/hdfs.jks
 ```
 
 Initialize HDFS:

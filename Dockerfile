@@ -33,7 +33,7 @@ RUN wget https://dlcdn.apache.org/hadoop/common/hadoop-${HADOOP_VERSION}/hadoop-
     && rm hadoop-${HADOOP_VERSION}.tar.gz
 ENV PATH ${PATH}:${HADOOP_HOME}/bin:${HADOOP_HOME}/sbin
 
-ENV SPARK_VERSION 3.2.1
+ENV SPARK_VERSION 3.2.2
 ENV SPARK_HADOOP_VERSION 3.2
 ENV SPARK_HOME /opt/spark
 ENV SPARK_CONF_DIR ${SPARK_HOME}/conf
@@ -53,7 +53,7 @@ RUN groupadd hadoop \
 RUN chown -R -L hdfs:hadoop ${HADOOP_HOME} && chmod -R 770 ${HADOOP_HOME}
 RUN chown -R -L spark:hadoop ${SPARK_HOME} && chmod -R 770 ${SPARK_HOME}
 
-RUN mkdir -p /data/0/nn /data/0/dn /data/0/dn && chown -R hdfs:hadoop /data
+RUN mkdir -p /data/0/nn /data/0/dn /data/0/jn && chown -R hdfs:hadoop /data
 
 COPY krb5.conf /etc/krb5.conf
 COPY entrypoint.sh /entrypoint.sh

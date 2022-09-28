@@ -15,8 +15,8 @@ services:
       - .env
     volumes:
       - hdfs-nn:/data/0/nn
-      - ./keytab:/etc/security/keytab
       - ./keystore/hdfs.jks:/hdfs.jks
+      - ./keytab:/etc/security/keytab
       - ./krb5.conf:/etc/krb5.conf
     logging:
       driver: "json-file"
@@ -27,13 +27,21 @@ services:
 #  journalnode:
 #    image: tornermarton/hadoop
 #    command: hdfs journalnode
+#    user: hdfs:hadoop
+#    container_name: jn.example
+#    hostname: jn.example.com
 #    restart: unless-stopped
+#    ports:
+#      - "8481:8481"
 #    depends_on:
 #      - namenode
 #    env_file:
 #      - .env
 #    volumes:
 #      - hdfs-jn:/data/0/jn
+#      - ./keystore/hdfs.jks:/hdfs.jks
+#      - ./keytab:/etc/security/keytab
+#      - ./krb5.conf:/etc/krb5.conf
 #    logging:
 #      driver: "json-file"
 #      options:
@@ -53,8 +61,8 @@ services:
       - .env
     volumes:
       - hdfs-dn:/data/0/dn
-      - ./keytab:/etc/security/keytab
       - ./keystore/hdfs.jks:/hdfs.jks
+      - ./keytab:/etc/security/keytab
       - ./krb5.conf:/etc/krb5.conf
     logging:
       driver: "json-file"
@@ -70,12 +78,13 @@ services:
     hostname: rm.example.com
     restart: unless-stopped
     ports:
-      - "8088:8088"
+      - "8090:8090"
     depends_on:
       - namenode
     env_file:
       - .env
     volumes:
+      - ./keystore/hdfs.jks:/hdfs.jks
       - ./keytab:/etc/security/keytab
       - ./krb5.conf:/etc/krb5.conf
     logging:
@@ -92,13 +101,14 @@ services:
     hostname: nm01.example.com
     restart: unless-stopped
     ports:
-      - "8042:8042"
+      - "8044:8044"
     depends_on:
       - namenode
       - resourcemanager
     env_file:
       - .env
     volumes:
+      - ./keystore/hdfs.jks:/hdfs.jks
       - ./keytab:/etc/security/keytab
       - ./krb5.conf:/etc/krb5.conf
     logging:
@@ -115,7 +125,7 @@ services:
     hostname: jhs.example.com
     restart: unless-stopped
     ports:
-      - "8188:8188"
+      - "8190:8190"
     depends_on:
       - namenode
       - resourcemanager
@@ -123,6 +133,7 @@ services:
       - .env
     volumes:
       - hdfs-history:/hadoop/yarn/timeline
+      - ./keystore/hdfs.jks:/hdfs.jks
       - ./keytab:/etc/security/keytab
       - ./krb5.conf:/etc/krb5.conf
     logging:
@@ -174,7 +185,7 @@ services:
 volumes:
   hdfs-nn:
   hdfs-dn:
-#  hdfs-jn:
+  hdfs-jn:
   hdfs-history:
 
 networks:
