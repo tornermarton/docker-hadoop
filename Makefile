@@ -11,3 +11,6 @@ help: ## This help.
 # Build the container
 build: ## Build the container
 	@docker build -t tornermarton/hadoop .
+
+build-gw: ## Build the container
+	@docker build -f gateway.Dockerfile -t tornermarton/hadoop-gateway .

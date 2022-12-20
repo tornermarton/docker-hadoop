@@ -165,10 +165,11 @@ services:
 
   gateway:
     image: tornermarton/hadoop-gateway
-    command: tail -f /dev/null
     container_name: gw.example
     hostname: gw.example.com
     restart: unless-stopped
+    ports:
+      - "7722:22"
     depends_on:
       - namenode
     env_file:
